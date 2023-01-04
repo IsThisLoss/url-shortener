@@ -38,7 +38,7 @@ Urls::Urls(const userver::storages::postgres::ClusterPtr& pg) : pg_{pg}
 {}
 
 bool Urls::Insert(const std::string& original_url, const std::string& short_url) const {
-  const auto result = pg_->Execute(kWriteFlags, kInsertUrls, original_url, short_url);
+  const auto result = pg_->Execute(kWriteFlags, kInsertUrls, short_url, original_url);
   // if result set is empty it means that we triggered ON CONFLICT DO NOTHING part,
   // so given short_url already exists in database
   return !result.IsEmpty();

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <userver/server/handlers/http_handler_json_base.hpp>
-#include <userver/storages/postgres/cluster.hpp>
+
+#include <components/unshortener.hpp>
 
 namespace url_shortener::views::u {
 
@@ -18,7 +19,7 @@ public:
       userver::server::request::RequestContext& context) const override;
 
 private:
-  const userver::storages::postgres::ClusterPtr pg_cluster_;
+  components::Unshortener& unshortener_;
 };
 
 }

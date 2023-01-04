@@ -10,12 +10,19 @@ add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
+  src/components/shortener.hpp
+  src/components/shortener.cpp
+  src/components/unshortener.hpp
+  src/components/unshortener.cpp
   src/db/urls.hpp
   src/db/urls.cpp
   src/views/api/v1/shorten/view.hpp
   src/views/api/v1/shorten/view.cpp
   src/views/u/view.hpp
   src/views/u/view.cpp
+  src/utils/postgres.hpp
+  src/utils/http.hpp
+  src/utils/http.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core userver-postgresql)
 

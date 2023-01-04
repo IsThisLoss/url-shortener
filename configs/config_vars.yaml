@@ -6,4 +6,7 @@ is_testing: false
 
 server-port: 8080
 
-dbconnection: 'postgresql://url-shortener_user:password@localhost:5432/url-shortener_db_1'
+dbconnection: 'postgresql://url-shortener_user:password@localhost:5432/url_shortener'
+
+base_url: 'http://base.url'
+len: 5

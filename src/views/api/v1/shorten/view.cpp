@@ -2,11 +2,11 @@
 
 #include <userver/components/component_context.hpp>
 
-#include <userver/storages/postgres/component.hpp>
-
 #include <userver/formats/json.hpp>
 
 #include <db/urls.hpp>
+
+#include <utils/http.hpp>
 
 namespace url_shortener::views::api::v1::shorten {
 
@@ -19,22 +19,15 @@ userver::formats::json::Value Make200(const std::string& original_url, const std
   return result.ExtractValue();
 }
 
-userver::formats::json::Value Make400(const std::string& code, const std::string& message) {
-  userver::formats::json::ValueBuilder result;
-  result["code"] = code;
-  result["message"] = message;
-  return result.ExtractValue();
 }
 
-}
-
-View::View(const userver::components::ComponentConfig& config,
-        const userver::components::ComponentContext& context)
-      : HttpHandlerJsonBase(config, context),
-        pg_cluster_(
-            context
-                .FindComponent<userver::components::Postgres>("postgres-db-1")
-                .GetCluster()) {}
+View::View(
+  const userver::components::ComponentConfig& config,
+  const userver::components::ComponentContext& context
+)
+  : HttpHandlerJsonBase{config, context}
+  , shortener_{context.FindComponent<components::Shortener>()}
+{}
 
 userver::formats::json::Value View::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -44,17 +37,13 @@ userver::formats::json::Value View::HandleRequestJsonThrow(
 
   std::string original_url{};
   try {
-   original_url = request_json["original_url"].As<std::string>();
+    original_url = request_json["original_url"].As<std::string>();
   } catch (const std::exception& e) {
     response.SetStatus(userver::server::http::HttpStatus::kBadRequest);
-    return Make400("BAD_REQUEST", "Failed to parse request body");
+    return utils::Make400("BAD_REQUEST", "Failed to parse request body");
   }
 
-  url_shortener::db::Urls urls{pg_cluster_};
-
-  // FIXME
-  std::string short_url = "lol";
-  urls.Insert(original_url, short_url);
+  const auto short_url = shortener_.MakeShortUrl(original_url);
 
   response.SetStatusOk();
   return Make200(original_url, short_url);

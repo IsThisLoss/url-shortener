@@ -68,8 +68,22 @@ components_manager:
             method: GET
             task_processor: main-task-processor
 
-        postgres-db-1:
+        postgres-url_shortener:
             dbconnection: $dbconnection
             blocking_task_processor: fs-task-processor
             dns_resolver: async
             sync-start: true
+
+        dns-client:
+            fs-task-processor: fs-task-processor
+
+        shortener:
+          base_url: $base_url
+          len: $len
+
+        unshortener:
+          base_url: $base_url
+          size: 1000
+          ways: 4
+          lifetime: 1s
+          config-settings: false

@@ -38,3 +38,15 @@ def pgsql_local(root_dir, pgsql_local_create):
 @pytest.fixture
 def client_deps(pgsql):
     pass
+
+@pytest.fixture
+def add_urls(pgsql):
+    def wrapper(original_url, short_url):
+        cursor = pgsql['url_shortener'].cursor()
+        cursor.execute('''
+            INSERT INTO url_shortener.urls(
+                original_url,
+                short_url
+            ) VALUES (%s, %s)
+        ''', (original_url, short_url))
+    return wrapper
