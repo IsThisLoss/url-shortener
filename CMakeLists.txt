@@ -1,19 +1,30 @@
 cmake_minimum_required(VERSION 3.12)
-project(pg_service_template CXX)
+project(url-shortener CXX)
 
 include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
 
-add_subdirectory(third_party/userver)
+include_directories(src)
 
+add_subdirectory(third_party/userver)
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/hello.hpp
-    src/hello.cpp
+  src/components/shortener.hpp
+  src/components/shortener.cpp
+  src/components/unshortener.hpp
+  src/components/unshortener.cpp
+  src/db/urls.hpp
+  src/db/urls.cpp
+  src/views/api/v1/shorten/view.hpp
+  src/views/api/v1/shorten/view.cpp
+  src/views/u/view.hpp
+  src/views/u/view.cpp
+  src/utils/postgres.hpp
+  src/utils/http.hpp
+  src/utils/http.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core userver-postgresql)
-
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
@@ -21,19 +32,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
 
 
 # Unit Tests
-add_executable(${PROJECT_NAME}_unittest
-    src/hello_test.cpp
-)
-target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
-add_google_tests(${PROJECT_NAME}_unittest)
+# add_executable(${PROJECT_NAME}_unittest
+#    src/hello_test.cpp
+#)
+#target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
+#add_google_tests(${PROJECT_NAME}_unittest)
 
 
 # Benchmarks
-add_executable(${PROJECT_NAME}_benchmark
-	src/hello_benchmark.cpp
-)
-target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver-ubench)
-add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
+#add_executable(${PROJECT_NAME}_benchmark
+#	src/hello_benchmark.cpp
+#)
+#target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver-ubench)
+#add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
 
 # Functional Tests
 add_subdirectory(tests)

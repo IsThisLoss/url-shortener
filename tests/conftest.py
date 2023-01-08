@@ -29,7 +29,7 @@ def initial_data_path(root_dir):
 def pgsql_local(root_dir, pgsql_local_create):
     """Create schemas databases for tests"""
     databases = discover.find_schemas(
-        'pg_service_template',  # service name that goes to the DB connection
+        'url-shortener',  # service name that goes to the DB connection
         [root_dir.joinpath('postgresql/schemas')],
     )
     return pgsql_local_create(list(databases.values()))
@@ -38,3 +38,16 @@ def pgsql_local(root_dir, pgsql_local_create):
 @pytest.fixture
 def client_deps(pgsql):
     pass
+
+
+@pytest.fixture
+def add_urls(pgsql):
+    def wrapper(original_url, short_url):
+        cursor = pgsql['url_shortener'].cursor()
+        cursor.execute('''
+            INSERT INTO url_shortener.urls(
+                original_url,
+                short_url
+            ) VALUES (%s, %s)
+        ''', (original_url, short_url))
+    return wrapper
