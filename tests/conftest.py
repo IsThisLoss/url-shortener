@@ -39,6 +39,7 @@ def pgsql_local(root_dir, pgsql_local_create):
 def client_deps(pgsql):
     pass
 
+
 @pytest.fixture
 def add_urls(pgsql):
     def wrapper(original_url, short_url):
